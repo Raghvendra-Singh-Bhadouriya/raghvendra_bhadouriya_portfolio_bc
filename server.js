@@ -9,7 +9,7 @@ const projectRouter = require("./Routes/projectsRoute")
 const skillRouter = require("./Routes/skillsRoute")
 
 server.use(cors({
-    origin: 'http://localhost:5173',
+    origin: 'https://raghvendra-bhadouriya-portfolio.vercel.app/',
     credentials: true
   }))
 server.use(express.json())
