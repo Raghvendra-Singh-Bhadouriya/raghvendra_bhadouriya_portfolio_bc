@@ -28,6 +28,10 @@ server.use(express.json())
 server.use("/", projectRouter)
 server.use("/", skillRouter)
 
+app.get("*", (req, res) => {
+  res.sendFile(path.resolve(__dirname, "build", "index.html"));
+});
+
 server.listen(PORT, async (req, res) => {
     try {
         await Connection()
