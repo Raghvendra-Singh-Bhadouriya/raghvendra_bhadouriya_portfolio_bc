@@ -6,7 +6,8 @@ const cors = require("cors")
 const Connection = require("./config/db")
 
 const projectRouter = require("./Routes/projectsRoute")
-const skillRouter = require("./Routes/skillsRoute")
+const skillRouter = require("./Routes/skillsRoute");
+const { default: axios } = require("axios");
 
 const allowedOrigins = [
   'http://localhost:5173',
@@ -23,6 +24,16 @@ server.use(cors({
   },
   credentials: true
 }));
+
+app.get("/ping", (_, res) => {
+  res.send("Server is awake!")
+})
+
+setInterval(() => {
+  axios.get("https://raghvendra-bhadouriya-portfolio-bc-api.onrender.com")
+  .then(() => console.log("Pinged server to keep awake"))
+  .catch(() => console.log("Ping failed"))
+}, 5 * 60 *1000);
 
 server.use(express.json())
 server.use("/", projectRouter)

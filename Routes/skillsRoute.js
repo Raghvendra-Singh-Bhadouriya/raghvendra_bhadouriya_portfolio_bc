@@ -29,9 +29,24 @@ route.post("/add_skill", async (req, res) => {
     }
 })
 
+let cachedSkills = null;
+let lastFetchTime = 0;
+
+const CACHE_TIME = 10 * 60 * 1000;
+
 route.get("/skills", async (req, res) => {
+    const now = Data.now();
+
+    if (cachedSkills && (now - lastFetchTime < CACHE_TIME)) {
+        return res.json(cachedSkills);
+    }
+
     try {
         const allSkills = await skillModel.find()
+
+        cachedSkills = allSkills;
+        lastFetchTime = now;
+        
         res.status(200).json({
             message: `All Skills successfully fetched`,
             projects: allSkills

@@ -29,9 +29,23 @@ route.post("/add_project", async (req, res) => {
     }
 })
 
+let cachedProjects = null;
+let lastFetchTime = 0;
+
+const CACHE_TIME = 10 * 60 * 1000;
+
 route.get("/projects", async (req, res) => {
+    const now = Date.now();
+
+    if (cachedProjects && (now - lastFetchTime < CACHE_TIME)) {
+        return res.json(cachedProjects);
+    }
     try {
         const allProjects = await projectModel.find()
+
+        cachedProjects = allProjects;
+        lastFetchTime = now;
+
         res.status(200).json({
             message: `AllProjects successfully fetched`,
             projects: allProjects
