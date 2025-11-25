@@ -25,7 +25,7 @@ server.use(cors({
   credentials: true
 }));
 
-app.get("/ping", (_, res) => {
+server.get("/ping", (_, res) => {
   res.send("Server is awake!")
 })
 
@@ -39,7 +39,7 @@ server.use(express.json())
 server.use("/", projectRouter)
 server.use("/", skillRouter)
 
-app.get("*", (req, res) => {
+server.get("*", (req, res) => {
   res.sendFile(path.resolve(__dirname, "build", "index.html"));
 });
 
