@@ -3,6 +3,7 @@ const express = require("express")
 const PORT = process.env.PORT || 3000
 const server = express();
 const cors = require("cors")
+const path = require("path");
 const Connection = require("./config/db")
 
 const projectRouter = require("./Routes/projectsRoute")
@@ -30,7 +31,7 @@ server.get("/ping", (_, res) => {
 })
 
 setInterval(() => {
-  axios.get("https://raghvendra-bhadouriya-portfolio-bc-api.onrender.com")
+  axios.get("https://raghvendra-bhadouriya-portfolio-bc-api.onrender.com/ping")
   .then(() => console.log("Pinged server to keep awake"))
   .catch(() => console.log("Ping failed"))
 }, 5 * 60 *1000);
