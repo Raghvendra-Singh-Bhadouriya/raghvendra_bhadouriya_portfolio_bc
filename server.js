@@ -27,14 +27,24 @@ server.use(cors({
 }));
 
 server.get("/ping", (_, res) => {
-  res.send("Server is awake!")
-})
+  res.send("Server is awake!");
+});
+
+const urlsToPing = [
+  "https://raghvendra-bhadouriya-portfolio-bc-api.onrender.com/ping",
+  "https://raghvendra-bhadouriya-portfolio-bc-api.onrender.com/projects",
+  "https://raghvendra-bhadouriya-portfolio-bc-api.onrender.com/skill/language",
+  "https://raghvendra-bhadouriya-portfolio-bc-api.onrender.com/skill/technology",
+  "https://raghvendra-bhadouriya-portfolio-bc-api.onrender.com/skill/tools"
+];
 
 setInterval(() => {
-  axios.get("https://raghvendra-bhadouriya-portfolio-bc-api.onrender.com/ping")
-  .then(() => console.log("Pinged server to keep awake"))
-  .catch(() => console.log("Ping failed"))
-}, 5 * 60 *1000);
+  urlsToPing.forEach(url => {
+    axios.get(url)
+      .then(() => console.log(`Pinged: ${url}`))
+      .catch(() => console.log(`Ping failed: ${url}`));
+  });
+}, 5 * 60 * 1000);
 
 server.use(express.json())
 server.use("/", projectRouter)

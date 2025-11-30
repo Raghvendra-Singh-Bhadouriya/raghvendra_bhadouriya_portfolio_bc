@@ -6,111 +6,167 @@ const skillModel = require("../Models/skillsSchema");
 /* ============================================================
    1️⃣ ADD SKILL
 ============================================================ */
+// route.post("/add_skill", async (req, res) => {
+//     try {
+//         const { title } = req.body;
+
+//         const skillExists = await skillModel.findOne({ title });
+
+//         if (skillExists) {
+//             return res.status(400).json({
+//                 message: "Skill already exists"
+//             });
+//         }
+
+//         const newSkill = new skillModel(req.body);
+//         await newSkill.save();
+
+//         res.status(201).json({
+//             message: "Skill successfully added",
+//             skill: newSkill
+//         });
+
+//     } catch (error) {
+//         res.status(500).json({
+//             message: `Error adding skill: ${error.message}`
+//         });
+//     }
+// });
+
 route.post("/add_skill", async (req, res) => {
     try {
         const { title } = req.body;
 
-        const skillExists = await skillModel.findOne({ title });
+        const skillExists = await skillModel.findOne({ title })
 
-        if (skillExists) {
-            return res.status(400).json({
-                message: "Skill already exists"
-            });
+        if(skillExists){
+            return res.status(400).json({message: `skill is already exists`})
         }
 
-        const newSkill = new skillModel(req.body);
-        await newSkill.save();
+        const newSkill = new skillModel(req.body)
+        newSkill.save();
 
         res.status(201).json({
-            message: "Skill successfully added",
-            skill: newSkill
-        });
-
+            message: `Skill added successfully`,
+            data: newSkill
+        })
     } catch (error) {
-        res.status(500).json({
-            message: `Error adding skill: ${error.message}`
-        });
+        res.status(500).json({message: `Error adding skill: ${error.message}`})
     }
-});
+})
 
 
 /* ============================================================
    2️⃣ GET ALL SKILLS (With Cache)
 ============================================================ */
-let cachedSkills = null;
-let lastFetchTime = 0;
-const CACHE_TIME = 10 * 60 * 1000; // 10 minutes
+// let cachedSkills = null;
+// let lastFetchTime = 0;
+// const CACHE_TIME = 10 * 60 * 1000; // 10 minutes
 
-route.get("/skills", async (req, res) => {
-    const now = Date.now();   // ❗ FIXED: "Data.now" → "Date.now"
+// route.get("/skills", async (req, res) => {
+//     const now = Date.now();
 
-    // Serve from cache
-    if (cachedSkills && (now - lastFetchTime < CACHE_TIME)) {
-        return res.status(200).json(cachedSkills);
-    }
+//     // Serve from cache
+//     if (cachedSkills && (now - lastFetchTime < CACHE_TIME)) {
+//         return res.status(200).json(cachedSkills);
+//     }
 
+//     try {
+//         const allSkills = await skillModel.find();
+
+//         cachedSkills = {
+//             message: "All skills fetched successfully",
+//             skills: allSkills
+//         };
+
+//         lastFetchTime = now;
+
+//         res.status(200).json(cachedSkills);
+
+//     } catch (error) {
+//         res.status(500).json({
+//             message: `Error fetching skills: ${error.message}`
+//         });
+//     }
+// });
+
+route.get("/skills", async (req,res) => {
     try {
         const allSkills = await skillModel.find();
 
-        cachedSkills = {
-            message: "All skills fetched successfully",
-            skills: allSkills
-        };
+        if(!allSkills){
+            res.status(400).json({message: `Skills not found`})
+        }
 
-        lastFetchTime = now;
-
-        res.status(200).json(cachedSkills);
-
+        res.status(200).json({
+            message: `All skills fetched successfully`,
+            data: allSkills
+        })
     } catch (error) {
-        res.status(500).json({
-            message: `Error fetching skills: ${error.message}`
-        });
+        res.status(500).josn({message: `Error fetching skills: ${error.message}`})
     }
-});
-
+})
 
 /* ============================================================
    3️⃣ GET SKILLS BY CATEGORY (With Cache)
 ============================================================ */
-let cachedSkillsByCategory = null;
-let lastSkillFetchTime = 0;
-const CACHE_SKILL_TIME = 10 * 60 * 1000;
+// let cachedSkillsByCategory = null;
+// let lastSkillFetchTime = 0;
+// const CACHE_SKILL_TIME = 10 * 60 * 1000;
 
-route.get("/skill/:category", async (req, res) => {
-    const now = Date.now();
+// route.get("/skill/:category", async (req, res) => {
+//     const now = Date.now();
 
-    if (
-        cachedSkillsByCategory &&
-        (now - lastSkillFetchTime < CACHE_SKILL_TIME)
-    ) {
-        return res.status(200).json(cachedSkillsByCategory);
-    }
+//     if (cachedSkillsByCategory && (now - lastSkillFetchTime < CACHE_SKILL_TIME)) {
+//         return res.status(200).json(cachedSkillsByCategory);
+//     }
 
+//     try {
+//         const { category } = req.params;
+//         const cSkills = await skillModel.find({ category });
+
+//         if (!cSkills || cSkills.length === 0) {
+//             return res.status(404).json({
+//                 message: "No skills found for this category"
+//             });
+//         }
+
+//         cachedSkillsByCategory = {
+//             message: "Skills fetched successfully by category",
+//             skill: cSkills
+//         };
+
+//         lastSkillFetchTime = now;
+
+//         res.status(200).json(cachedSkillsByCategory);
+
+//     } catch (error) {
+//         res.status(500).json({
+//             message: `Error fetching skills by category: ${error.message}`
+//         });
+//     }
+// });
+
+route.get("/skill/:category", async (req, res) =>  {
     try {
-        const { category } = req.params;
-        const skills = await skillModel.find({ category });
+        const  { category } = req.params;
 
-        if (!skills || skills.length === 0) {
-            return res.status(404).json({
-                message: "No skills found for this category"
-            });
+        const byCategory = await skillModel.find({category})
+
+        if(!byCategory){
+            return res.status(404).json({message: `This category skill not found`})
         }
 
-        cachedSkillsByCategory = {
-            message: "Skills fetched successfully by category",
-            skills
-        };
-
-        lastSkillFetchTime = now;
-
-        res.status(200).json(cachedSkillsByCategory);
+        res.status(200).json({
+            message: `Skill fetched successfully`,
+            data: byCategory
+        })
 
     } catch (error) {
-        res.status(500).json({
-            message: `Error fetching skills by category: ${error.message}`
-        });
+        res.status(500).json({message: `Error fetching skills by category: ${error.message}`})
     }
-});
+})
+
 
 
 /* ============================================================
