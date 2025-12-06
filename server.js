@@ -5,10 +5,11 @@ const server = express();
 const cors = require("cors")
 const path = require("path");
 const Connection = require("./config/db")
+server.use(express.json())
 
 const projectRouter = require("./Routes/projectsRoute")
 const skillRouter = require("./Routes/skillsRoute");
-const { default: axios } = require("axios");
+//const { default: axios } = require("axios");
 
 const allowedOrigins = [
   'http://localhost:5173',
@@ -26,27 +27,11 @@ server.use(cors({
   credentials: true
 }));
 
-server.get("/ping", (_, res) => {
+
+server.get("/", (_, res) => {
   res.send("Server is awake!");
 });
 
-const urlsToPing = [
-  "https://raghvendra-bhadouriya-portfolio-bc-api.onrender.com/ping",
-  "https://raghvendra-bhadouriya-portfolio-bc-api.onrender.com/projects",
-  "https://raghvendra-bhadouriya-portfolio-bc-api.onrender.com/skill/language",
-  "https://raghvendra-bhadouriya-portfolio-bc-api.onrender.com/skill/technology",
-  "https://raghvendra-bhadouriya-portfolio-bc-api.onrender.com/skill/tools"
-];
-
-setInterval(() => {
-  urlsToPing.forEach(url => {
-    axios.get(url)
-      .then(() => console.log(`Pinged: ${url}`))
-      .catch(() => console.log(`Ping failed: ${url}`));
-  });
-}, 5 * 60 * 1000);
-
-server.use(express.json())
 server.use("/", projectRouter)
 server.use("/", skillRouter)
 
